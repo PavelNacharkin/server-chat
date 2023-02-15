@@ -11,16 +11,18 @@ import java.net.Socket;
 @RequiredArgsConstructor
 public class ClientRunnable implements Runnable, Observer {
     private final Socket socket;
+    private final ServerService serverService;
 
     @SneakyThrows
     @Override
     public void run() {
         System.out.println("Client connected");
+        serverService.addObserver(this);
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String messageFromClient;
         while ((messageFromClient = bufferedReader.readLine()) != null) {
             System.out.println(messageFromClient);
-
+            serverService.notifyObserver(messageFromClient);
         }
     }
 
