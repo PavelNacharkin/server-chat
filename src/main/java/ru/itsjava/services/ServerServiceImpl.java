@@ -22,7 +22,7 @@ public class ServerServiceImpl implements ServerService {
         while (true) {
             Socket socket = serverSocket.accept();
             if (socket != null) {
-                Thread thread = new Thread(new ClientRunnable(socket,this));
+                Thread thread = new Thread(new ClientRunnable(socket, this));
                 thread.start();
             }
 
@@ -44,6 +44,16 @@ public class ServerServiceImpl implements ServerService {
     public void notifyObserver(String message) {
         for (Observer observer : observers) {
             observer.notifyMe(message);
+        }
+    }
+
+
+    @Override
+    public void notifyObserverExceptMe(Observer observer,String message) {
+        for (Observer obs : observers) {
+            if (!observer.equals(obs)) {
+                obs.notifyMe(message);
+            }
         }
     }
 }
