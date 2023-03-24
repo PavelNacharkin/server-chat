@@ -1,6 +1,7 @@
 package ru.itsjava.dao;
 
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import ru.itsjava.domain.User;
 import ru.itsjava.exception.UserNotFoundException;
 import ru.itsjava.utils.Props;
@@ -8,9 +9,10 @@ import ru.itsjava.utils.Props;
 import java.sql.*;
 
 @AllArgsConstructor
-public class UserDaoImpl implements UserDao {
+public class UserDaoImpl implements UserDao{
     private final Props props;
 
+    @SneakyThrows
     @Override
     public User findByNameAndPassword(String name, String password) {
         try (Connection connection = DriverManager.getConnection(
@@ -28,12 +30,13 @@ public class UserDaoImpl implements UserDao {
             if (userCount == 1) {
                 return new User(name, password);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        throw new UserNotFoundException("Пользователь не найден");
+        } catch (UserNotFoundException userNotFoundException) {
+            System.out.println(" Пользователь не найден");
+
+        }return new User("Not","Not");
     }
 
+    @SneakyThrows
     public User createNewUser(String name, String password) {
         try (Connection connection = DriverManager.getConnection(
                 props.getValue("db.url"),
@@ -45,9 +48,9 @@ public class UserDaoImpl implements UserDao {
             preparedStatement.setString(2, password);
             preparedStatement.executeUpdate();
             return new User(name, password);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (UserNotFoundException userNotFoundException) {
+            System.out.println("Кажется такой пользователь уже есть");
         }
-        throw new UserNotFoundException("Кажется такой пользователь уже есть");
+        return new User("Not","Not");
     }
 }
