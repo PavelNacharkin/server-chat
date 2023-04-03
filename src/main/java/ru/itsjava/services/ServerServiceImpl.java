@@ -50,7 +50,7 @@ public class ServerServiceImpl implements ServerService {
 
     @Override
     public void addObserver(Observer observer) {
-        observers.add(observer);
+     observers.add(observer);
     }
 
     @Override

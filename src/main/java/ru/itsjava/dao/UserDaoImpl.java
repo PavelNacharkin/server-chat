@@ -9,18 +9,19 @@ import ru.itsjava.utils.Props;
 import java.sql.*;
 
 @AllArgsConstructor
-public class UserDaoImpl implements UserDao{
+public class UserDaoImpl implements UserDao {
     private final Props props;
 
     @SneakyThrows
     @Override
-    public User findByNameAndPassword(String name, String password) {
-        try (Connection connection = DriverManager.getConnection(
-                props.getValue("db.url"),
-                props.getValue("db.login"),
-                props.getValue("db.password"))
+    public User findByNameAndPassword(String name, String password)  {
+        try
+                (Connection connection = DriverManager.getConnection(
+                        props.getValue("db.url"),
+                        props.getValue("db.login"),
+                        props.getValue("db.password"))
 
-        ) {
+                ) {
             PreparedStatement preparedStatement = connection.prepareStatement("select count(*) cnt from schema_for_server.users where name = ? and password = ?;");
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, password);
@@ -31,9 +32,9 @@ public class UserDaoImpl implements UserDao{
                 return new User(name, password);
             }
         } catch (UserNotFoundException userNotFoundException) {
-            System.out.println(" Пользователь не найден");
-
-        }return new User("Not","Not");
+            System.out.println("Кажется такой пользователь уже есть");
+        }
+        throw new UserNotFoundException("Пользователь не найден");
     }
 
     @SneakyThrows
@@ -51,6 +52,6 @@ public class UserDaoImpl implements UserDao{
         } catch (UserNotFoundException userNotFoundException) {
             System.out.println("Кажется такой пользователь уже есть");
         }
-        return new User("Not","Not");
+        throw new UserNotFoundException("Пользователь не найден");
     }
 }
