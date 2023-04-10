@@ -31,7 +31,7 @@ public class UserDaoImpl implements UserDao {
             if (userCount == 1) {
                 return new User(name, password);
             }
-        } catch (UserNotFoundException userNotFoundException) {
+        } catch (SQLException e) {
             System.out.println("Кажется такой пользователь уже есть");
         }
         throw new UserNotFoundException("Пользователь не найден");
@@ -49,7 +49,7 @@ public class UserDaoImpl implements UserDao {
             preparedStatement.setString(2, password);
             preparedStatement.executeUpdate();
             return new User(name, password);
-        } catch (UserNotFoundException userNotFoundException) {
+        } catch (SQLException e) {
             System.out.println("Кажется такой пользователь уже есть");
         }
         throw new UserNotFoundException("Пользователь не найден");

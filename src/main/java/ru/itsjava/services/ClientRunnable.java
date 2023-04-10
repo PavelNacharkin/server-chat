@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j;
 import ru.itsjava.dao.MessageDao;
 import ru.itsjava.dao.UserDao;
+import ru.itsjava.domain.Message;
 import ru.itsjava.domain.User;
 import ru.itsjava.exception.UserNotFoundException;
 
@@ -62,6 +63,7 @@ public class ClientRunnable implements Runnable, Observer {
                 notifyMe("Вы зарегестрировались и подключенны к чату");
                 return true;
             } else notifyMe("Кажется такой пользователь уже есть, попробуйте авторизироваться");
+            return false;
         }
         return false;
     }
@@ -69,29 +71,25 @@ public class ClientRunnable implements Runnable, Observer {
     @SneakyThrows
     private boolean authorization(String login, String password) {
         try {
-
             user = userDao.findByNameAndPassword(login, password);
-            if (user != null) {
-                log.info(("Client " + user.getName() + " authorized"));
-                return true;
-            }
-
+            log.info(("Client " + user.getName() + " authorized"));
+            return true;
         } catch (UserNotFoundException e) {
+            log.info(("Client not authorized"));
+            return false;
         }
-        log.info(("Client not authorized"));
-        return false;
-
     }
 
     @SneakyThrows
     private boolean registration(String login, String password) {
-        if (authorization(login, password)) {
-            log.info(("Client not registered"));
+        try {
+            user = userDao.createNewUser(login, password);
+            log.info(("Client  registered"));
+            return true;
+        } catch (UserNotFoundException e) {
+            log.info("Client not registered");
             return false;
         }
-        user = userDao.createNewUser(login, password);
-        log.info("Client " + user.getName() + " registered");
-        return true;
     }
 
     @SneakyThrows

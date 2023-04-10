@@ -18,14 +18,17 @@ import java.util.List;
 
 @Log4j
 public class ServerServiceImpl implements ServerService {
-    public final static int PORT = 8081;
+    private final Props props = new Props();
+//    public final static int PORT = 8081;
     public final List<Observer> observers = new ArrayList<>();
-    private final UserDao userDaoImpl = new UserDaoImpl(new Props());
-    private final File file = new File("src/main/resources/file.txt");
-    private final PrintWriter fileWriter = new PrintWriter(file);
-    private final MessageDao messageDaoIml = new MessageDaoImpl(new Props());
+    private final UserDao userDaoImpl = new UserDaoImpl(props);
+    private final File file;
+    private final PrintWriter fileWriter;
+    private final MessageDao messageDaoIml = new MessageDaoImpl(props);
 
     public ServerServiceImpl() throws FileNotFoundException {
+        file = new File(props.getValue("rout"));
+        fileWriter = new PrintWriter(file);
     }
 
     @SneakyThrows
@@ -33,14 +36,14 @@ public class ServerServiceImpl implements ServerService {
 
     public void start() {
 
-        ServerSocket serverSocket = new ServerSocket(PORT);
+        ServerSocket serverSocket = new ServerSocket(Integer.valueOf(props.getValue("port")));
         System.out.println("== SERVER START ==");
         log.info("SERVER START");
 
         while (true) {
             Socket socket = serverSocket.accept();
             if (socket != null) {
-                Thread thread = new Thread(new ClientRunnable(socket, this, userDaoImpl, fileWriter,messageDaoIml));
+                Thread thread = new Thread(new ClientRunnable(socket, this, userDaoImpl, fileWriter, messageDaoIml));
                 thread.start();
             }
 
@@ -50,7 +53,7 @@ public class ServerServiceImpl implements ServerService {
 
     @Override
     public void addObserver(Observer observer) {
-     observers.add(observer);
+        observers.add(observer);
     }
 
     @Override
