@@ -1,19 +1,42 @@
-# server-chat
-This is the project server
-To work, you will need:
-database (I used MySQL)
-Scripts:
-CREATE a SCHEMA `schema_for_server` ;
+#  Проект "Чат"
+---
+## Сервер
+Эта часть основывается на паттерне "Наблюдатель"
+Сервер реализует прием и отправку сообещний, все сообщения первым делом приходят на сервер, а дальше рассылаются клиентам. Сервер способен информаровать Вас о успешной/неудачной авторизации или регистрации, проверка проходит при ипользуя запросы в базу данных.
 
-Table for storing messages:
-CREATE A TABLE 'schema_for_server'.`message' (
-'idmessage` INT NOT NULL AUTO_INCREMENT,
-'user' VARCHAR(256) NOT NULL,
-`text` VARCHAR(256) NOT NULL,
-PRIMARY KEY ('idmessage'))
+######Чтобы сервер работал его необходимо настроить
+* 1 При регистрации пользователя данные сохраняются в базу данных, в моем случае это MySql, для этого нужно создать схему с таблицами, приведу ниже скрипты: 
+  *  Схема
+  CREATE a SCHEMA `schema_for_server` ;
+   
+   
+   
+    * Таблица для сохранения данных пользователя 
 
-User Data table
-CREATE A TABLE `schema_for_server'.`users' (
-`name` VARCHAR(265) NOT NULL,
-`password` VARCHAR(256) NOT NULL,
-PRIMARY KEY (`name'))
+       >CREATE A TABLE `schema_for_server'.
+       `
+      users' (`name` VARCHAR(265) NOT NULL,
+      `password` VARCHAR(256) NOT NULL,
+       PRIMARY KEY (`name'))
+
+    *   Таблица для сохранения сообщений
+        >CREATE A TABLE 'schema_for_server'.`message' (
+        'idmessage` INT NOT NULL AUTO_INCREMENT,
+        'user' VARCHAR(256) NOT NULL,
+        `text` VARCHAR(256) NOT NULL,
+         PRIMARY KEY ('idmessage'))
+
+* 2 В файле __application.properties__ нужно внести данный для поключения к созданной базе данных 
+  * db.url= адрес где находится ваша схема 
+  * db.login= логин
+  * db.password= пароль
+  * port=8081
+  * rout=
+   
+  помимо сохранения сообщений в базу данных они записываются в текстовый файл, в строке __rout=__ укажите путь, куда хотите сохранить файл
+  
+ Eсли вы создали базу данных с другими именованиями, то необходиомо их прописать в классах __UserDaoImpl__ и __MessageDaoImpl__   
+
+* 3 Сервер регистрирует и записывает основные действия в файл.
+Вы можете посмотреть и скорректировать настройки логирования в файле __log4j.properties__
+>Все файлы __properties__ находятся в папке __resources__
